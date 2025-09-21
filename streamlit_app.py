@@ -376,6 +376,22 @@ items_df["ABV_fmt"] = items_df["ABV"].apply(_format_abv)
 items_df["Size"] = items_df["Size"].astype(str).str.strip()
 items_df["Rating"] = pd.to_numeric(items_df["Rating"], errors="coerce").fillna(0).clip(0,5).astype(int)
 
+
+# Sortable view (click column headers to sort)
+_table_view = items_df.copy()
+_table_view["Liquor Brand"] = _table_view["Brand"]
+_table_view["Item"] = _table_view["Item"]
+_table_view["% Alcohol"] = items_df["ABV"].apply(_format_abv)
+_table_view["Size"] = _table_view["Size"]
+_table_view["Rating"] = _table_view["Rating"].astype(int)
+_table_view["Stars"] = _table_view["Rating"].apply(lambda n: "⭐"*int(n) + "☆"*(5-int(n)))
+st.dataframe(
+    _table_view[["Liquor Brand","Item","% Alcohol","Size","Rating","Stars"]].reset_index(drop=True),
+    width='stretch',
+    hide_index=True
+)
+st.caption("Tip: Click a column header to sort. Use the star controls below to change ratings, then Save.")
+
 # Header row
 hc1, hc2, hc3, hc4, hc5 = st.columns([2,3,1.2,1.2,2.2])
 with hc1: st.markdown("**Liquor Brand**")
