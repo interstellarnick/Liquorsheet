@@ -331,50 +331,63 @@ if "Category" in df.columns and len(df):
 else:
     st.info("No category data available.")
 
-# ---------------------- Editable Ratings ----------------------
 
-st.markdown("### Edit Ratings")
+# ---------------------- Items Available ----------------------
+st.markdown("## Items Available")
 
-# Helper to render clickable stars and return updated value
-def render_star_row(row_id: int, current: int) -> int:
-    current = int(current) if pd.notna(current) else 0
-    cols = st.columns(5)
-    clicked_value = None
-    for i in range(1, 6):
-        label = "★" if i <= current else "☆"
-        if cols[i-1].button(label, key=f"star_{row_id}_{i}"):
-            clicked_value = i
-    return clicked_value if clicked_value is not None else current
+# Build the view with requested columns
+items_df = filtered.copy()
+# Ensure columns exist
+for _col in ["Brand","Item","ABV","Size","Rating"]:
+    if _col not in items_df.columns:
+        items_df[_col] = "" if _col != "Rating" else 0
+items_df["Brand"] = items_df["Brand"].astype(str).str.strip()
+items_df["Item"] = items_df["Item"].astype(str).str.strip()
+items_df["ABV"] = items_df["ABV"].astype(str).str.strip()
+items_df["Size"] = items_df["Size"].astype(str).str.strip()
+items_df["Rating"] = pd.to_numeric(items_df["Rating"], errors="coerce").fillna(0).clip(0,5).astype(int)
 
-if "Rating" in filtered.columns:
-    edit_df = filtered[["Category","Brand","Item","Type","Size","Rating"]].copy()
-else:
-    edit_df = pd.DataFrame(columns=["Category","Brand","Item","Type","Size","Rating"])
+# Header row
+hc1, hc2, hc3, hc4, hc5 = st.columns([2,3,1.2,1.2,2.2])
+with hc1: st.markdown("**Liquor Brand**")
+with hc2: st.markdown("**Item**")
+with hc3: st.markdown("**% Alcohol**")
+with hc4: st.markdown("**Size**")
+with hc5: st.markdown("**Rating**")
 
-new_ratings = {}
-for idx, row in edit_df.reset_index().iterrows():
-    ridx = int(row["index"])
-    c1, c2, c3, c4, c5 = st.columns([2,2,2,2,3])
-    with c1: st.write(row.get("Category",""))
-    with c2: st.write(row.get("Brand",""))
-    with c3: st.write(row.get("Item",""))
-    with c4: st.write(row.get("Type",""))
+# Interactive star control per row (⭐ for selected, ☆ for empty)
+pending_updates = {}
+for ridx, row in items_df.reset_index().iterrows():
+    src_idx = int(row["index"])
+    c1, c2, c3, c4, c5 = st.columns([2,3,1.2,1.2,2.2])
+    with c1: st.write(row["Brand"])
+    with c2: st.write(row["Item"])
+    with c3: st.write(row["ABV"])
+    with c4: st.write(row["Size"])
     with c5:
-        current = int(row.get("Rating", 0)) if pd.notna(row.get("Rating", 0)) else 0
-        updated = render_star_row(ridx, current)
-        # Show numeric hint under stars (optional)
-        st.caption(f"{updated}/5")
-        new_ratings[ridx] = int(updated)
+        current = int(row["Rating"]) if pd.notna(row["Rating"]) else 0
+        scols = st.columns(5)
+        new_val = current
+        for i in range(1, 6):
+            label = "⭐" if i <= current else "☆"
+            if scols[i-1].button(label, key=f"rate_star_{src_idx}_{i}"):
+                new_val = i
+        if new_val != current:
+            pending_updates[src_idx] = new_val
+        st.caption(f"{new_val}/5")
 
+# Apply saves
 if st.button("💾 Save ratings (session & file)"):
-    for ridx, val in new_ratings.items():
-        if "Rating" in df.columns:
-            df.loc[ridx, "Rating"] = val
-    Path(DATA_CSV).parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(DATA_CSV, index=False)
-    st.success("Ratings saved. (Note: on Streamlit Cloud this persists until the app restarts.)")
-    st.cache_data.clear()
-    st.rerun()
+    if "Rating" in df.columns:
+        for idx0, val0 in pending_updates.items():
+            df.loc[idx0, "Rating"] = int(val0)
+        Path(DATA_CSV).parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(DATA_CSV, index=False)
+        st.success("Ratings saved. (Note: on Streamlit Cloud this persists until the app restarts.)")
+        st.cache_data.clear()
+        st.rerun()
+    else:
+        st.warning("No 'Rating' column in data; cannot save.")
 
 # ---------------------- Add New Bottle ----------------------
 st.markdown("### Add a New Bottle")
