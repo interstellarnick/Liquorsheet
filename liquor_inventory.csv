@@ -1,0 +1,123 @@
+Brand,Item,Type,ABV,Size,Location 1,Qty Full,Qty Partial,Location 2,Rating,Category
+Eagle Rare,10 year,Bourbon,0.45,750ml,33w,4,0,,0,Whiskey
+Buffalo Trace,Straight Bourbon,Bourbon,0.45,1000 ml,33w,1,0,,0,Whiskey
+Buffalo Trace,Straight Bourbon,Bourbon,0.45,1750 ml,33w,1,0,,0,Whiskey
+Buffalo Trace,Straight Bourbon,Bourbon,0.45,750 ml,33w,1,0,,0,Whiskey
+Buffalo Trace,Straight Bourbon,Bourbon,0.45,50 ml,33w,8,0,,0,Whiskey
+Woodford Reserve,Masters Collection,Bourbon,0.606,750 ml,33w,0,0,,0,Whiskey
+Makers Mark,no 46 french oaked,Bourbon,0.554,750 ml,33w,1,0,,0,Whiskey
+Weller,12 Year,Bourbon,0.45,750 ml,33w,0,0,,0,Whiskey
+Weller,Antique 107,Bourbon,0.535,750 ml,33w,1,0,,0,Whiskey
+Weller,Special Reserve,Bourbon,0.45,750 ml,33w,1,0,,0,Whiskey
+Russels Reserve,10 Year,Bourbon,0.45,750 ml,33w,0,0,,0,Whiskey
+Blantons,Single Barrel,Bourbon,0.465,750 ml,33w,6,1,161 Archer,0,Whiskey
+Bartons/Kirkland,Bottled-In-Bond,Bourbon,0.5,1000ml,33w,1,0,,0,Whiskey
+E.H. Taylor,Small Batch,Bourbon,0.5,750ml,33w,4,1,161 Archer,0,Whiskey
+Bookers,Small Batch,Bourbon,0.633,750ml,33w,0,0,,0,Whiskey
+Old Forester,1920 Prohibition Style,Bourbon,0.474,750ml,33w,0,0,,0,Whiskey
+Willets,Pot Still Reserve,Bourbon,0.47,1750ml,33w,1,0,,0,Whiskey
+Buffalo Trace,Kosher Wheat,Bourbon,0.47,750ml,33w,1,0,,0,Whiskey
+Knob Creek,Small Batch,Bourbon,0.5,1750ml,,0,0,161 Archer,0,Whiskey
+Hatozaki,Small Batch,Japanese Whiskey,0.46,750 ml,33w,1,0,,0,Whiskey
+Toki,Suntory Whiskey,Japanese Whiskey,0.43,750ml,33w,1,0,,0,Whiskey
+Yamazaki,Single Malt 12 Yr,Japanese Whiskey,0.43,750ml,33w,1,0,,0,Whiskey
+Yamazaki,Single Malt,Japanese Whiskey,0.43,750ml,33w,1,0,,0,Whiskey
+Hibiki,100 yr Japanese Harmony,Japanese Whiskey,0.4,750ml,33w,1,0,,0,Whiskey
+Yamato,Mizunara Takeda Shingen,Japanese Whiskey,0.4,750ml,33w,0,0,,0,Whiskey
+Hibiki,Japanese Harmony,Japanese Whiskey,0.43,750ml,33w,1,0,,0,Whiskey
+Glenlivet,12 year,Scotch Whiskey,0.4,750ml,33w,1,0,,0,Whiskey
+Glenlivet,15 year,Scotch Whiskey,0.4,750ml,33w,0,0,,0,Whiskey
+Glenlivet,18 year,Scotch Whiskey,0.43,750ml,33w,0,0,,0,Whiskey
+Macallen,12 yr double cask,Scotch Whiskey,40.0,750ml,,0,0,161 Archer,0,Whiskey
+Traveller Whiskey,Blend no 40,Whiskey,0.45,750 ml,33w,0,0,,0,Whiskey
+Sazerac,Rye,Whiskey,0.45,750ml,33w,2,0,,0,Whiskey
+High West,Cask collection Barbados Rum,Whiskey,0.5,750ml,33w,0,0,,0,Whiskey
+Jack Daniels,old no 7,Whiskey,0.4,750ml,33w,1,0,,0,Whiskey
+Jack Daniels,Gentlemans Jack,Whiskey,0.4,750ml,33w,1,0,,0,Whiskey
+Jack Daniels,Single Barrel,Whiskey,0.47,750ml,33w,1,0,,0,Whiskey
+Fireball,Cinnamon Whisky,Whisky,0.33,50 ml,33w,1,0,,0,Whiskey
+Jack Daniels,Fire Whisky,Whisky,0.35,1750 ml,,0,0,161 Archer,0,Whiskey
+Chimay,Grande Reserve,Ale,0.09,750ml,33w,1,0,,0,Beer
+Goose Island,Bourbon Proprietors County,Stout,0.147,500ml,33w,1,0,,0,Beer
+Goose Island,Bourbon County Cask Finish,Stout,0.16,500ml,33w,1,0,,0,Beer
+Kirkland,Bourbon Barrel Vintage Ale,Stout,0.12,650ml,33w,2,0,,0,Beer
+Goose Island,Elija Craig Barrels,Stout,0.16,500ml,33w,1,0,,0,Beer
+Goose Island,Barrel Aged,Stout,0.147,500ml,33w,3,0,,0,Beer
+Goose Island,Barrel Aged,Stout,0.146,500ml,33w,5,0,,0,Beer
+Goose Island,Barrel Aged,Stout,0.144,500ml,33w,2,0,,0,Beer
+Goose Island,Barrel Aged,Stout,0.146,500ml,33w,3,0,,0,Beer
+Goose Island,Barrel Aged,Stout,0.147,500ml,33w,1,0,,0,Beer
+Goose Island,Northwoods Stout,Stout,0.126,500ml,33w,1,0,,0,Beer
+Goose Island,Classic Cola,Stout,0.14,500ml,33w,1,0,,0,Beer
+Goose Island,Bananas Foster,Stout,0.139,500ml,33w,1,0,,0,Beer
+Goose Island,Backyard stout,Stout,0.129,500ml,33w,2,0,,0,Beer
+Goose Island,Macaroon Stout,Stout,0.146,500ml,33w,1,0,,0,Beer
+Goose Island,Vanilla Rye Stout,Stout,0.14,500ml,33w,1,0,,0,Beer
+New Glarus,Totaly Naked,LAger,0.0425,375ml,33w,6,0,,0,Beer
+Decoy,Pinot Noir,,0.141,750ml,33w,1,0,,0,Wine
+Seven Falls Cellars,Merlot,,0.145,750 ml,33w,1,0,,0,Wine
+Alvear,Solera 1927,,0.16,375 ml,33w,1,0,,0,Wine
+Miraval,Rose,,0.13,750 ml,33w,1,0,,0,Wine
+Craggy Range,Sauvignon Blanc,,0.125,750 ml,33w,1,0,,0,Wine
+Invivo SJP,Sauvignon Blanc,,0.13,750 ml,33w,1,0,,0,Wine
+Vin Glogg,Winter Wine,,0.135,1000 ml,33w,2,0,161 Archer,0,Wine
+Warre's Optimo 10,Optimo 10 yr,,0.2,500ml,33w,1,0,,0,Wine
+Copper & Thief,Red Wine Blend in bourbon barrels,,0.16,750ml,33w,1,0,,0,Wine
+Portal,Tawny Porto 20 yr,,0.2,750ml,33w,1,0,,0,Wine
+Domaine la Cadeniere,Vallon d'Escale Rose,,0.13,750ml,33w,1,0,,0,Wine
+Angeline vineyards,Chardonnay,,0.138,750ml,33w,1,0,,0,Wine
+Silverado Vineyards,Cabernet SauvignonCalifornia,,0.146,750ml,33w,1,0,,0,Wine
+Cabeca de Toiro,Reserva Red Wine,,0.135,750ml,33w,1,0,,0,Wine
+Chateau ste michelle,gewurztraminer,,0.125,750ml,33w,1,0,,0,Wine
+Penfolds,bin 28 kalimna,,0.145,750ml,33w,1,0,,0,Wine
+Palistorti di valgiano,colline luccchesi red wine,,0.135,750ml,33w,1,0,,0,Wine
+V Satttui,Off Dry Riesling,,0.129,750ml,33w,1,0,,0,Wine
+V Satttui,Gamay Rouge,,0.095,750ml,33w,1,0,,0,Wine
+V Satttui,Madeira,,0.19,750ml,33w,1,0,,0,Wine
+V Satttui,La Merica,,0.149,750ml,33w,1,0,,0,Wine
+V Satttui,Vintage Port,,0.18,500ml,33w,1,0,,0,Wine
+V Satttui,Riesling,,0.091,375ml,33w,1,0,,0,Wine
+Patron,Anejo Sherry Cask Aged,,0.4,750ml,33w,0,1,161 archer,0,Tequila
+Don Julio,1942,,0.4,750ml,33w,1,0,,0,Tequila
+Don Julio,1942 Reposado,,0.4,750ml,33w,1,0,,0,Tequila
+Gran Centenario,Leyenda Anejo,,0.4,750ml,33w,1,0,,0,Tequila
+Corazon,Anejo E.H Taylor Barrels,,0.4,750ml,33w,1,0,,0,Tequila
+Hendricks,Midsummer Solstace,,0.434,750ml,33w,1,1,,0,Gin
+Absaroka,Double Cask,,0.49,750ml,33w,1,0,,0,Gin
+Porteno,15 yr,,0.4,750ml,33w,0,1,,0,Rum
+Kirkland,Bourbon Casked,,0.4,750ml,33w,1,0,,0,Rum
+Kirkland,Barrel Aged 12 yr,,0.44,750ml,33w,1,0,,0,Rum
+Zubrowka,Bison Grass,,0.4,750ml,33w,1,0,,0,Vodka
+Wheatley,Vodka,,0.41,750ml,33w,1,0,,0,Vodka
+Chandon,Brut,,0.12,750 ml,33w,1,0,,0,Champagne
+Martini & Rossi,Brut,,0.075,750 ml,33w,1,0,,0,Champagne
+Emile Cheysson,Brut,,0.125,750 ml,33w,1,0,,0,Champagne
+Lamarca,Proseco,,0.11,187 ml,33w,1,0,,0,Champagne
+Mionetto,Prosecco Brut,,0.11,750ml,33w,1,0,,0,Champagne
+Loius Bresson,Brut,,0.115,750ml,33w,1,0,,0,Champagne
+Moet & Chandon,Brut,,0.12,750ml,33w,1,0,,0,Champagne
+Sahdy Creek,Bubbling Rose,,0.125,750ml,33w,1,0,,0,Champagne
+Kirkland,Mimosa,,0.06,750ml,33w,2,0,,0,Champagne
+Mama Mango,Mango Mimosa,,0.06,750ml,33w,1,0,,0,Champagne
+Canella,Bellini,,0.05,750ml,33w,1,0,,0,Champagne
+Gekkeikan Sake,Horin,,0.166,720ml,33w,2,0,,0,Sake
+Gekkeikan Sake,Ryomaden junmai,,0.155,720ml,33w,1,0,,0,Sake
+Asahi Shuzo,Dassai,,0.15,720ml,33w,1,0,,0,Sake
+Tozai,Blossom of Peace,,0.105,720ml,33w,1,0,,0,Sake
+Ginjo Genshu,Bushido,,0.18,180ml,33w,1,0,,0,Sake
+Ozeki,One Cup,,0.14,180ml,33w,8,0,,0,Sake
+Aperol,Apertivo,,0.11,1000 ml,33w,1,0,,0,Other
+Caravella,Limencello,,0.28,750 ml,33w,1,0,,0,Other
+Caravella,Limencello,,0.28,50 ml,33w,1,0,,0,Other
+Choya,Ume Extra Shiso,,0.17,700 ml,33w,1,0,,0,Other
+Choya,Umeshu,,0.146,750 ml,33w,1,0,,0,Other
+Handy & Schiller,Old Fashioned,,0.42,750ml,33w,0,1,161 archer,0,Other
+Chaucer's,Honey Mead,,0.105,750ml,33w,1,0,,0,Other
+Davids,Czitrinowka,,0.4,750ml,33w,1,0,,0,Other
+Cointreau,L'unuique Orange,,0.4,1000ml,33w,1,0,,0,Other
+Grand Marnier,Orange Liquor,,0.4,1000ml,33w,0,1,,0,Other
+Soon Hari,Strawberry Soju,,0.12,375ml,33w,1,0,,0,Other
+Libertine,Absunthe,,0.72,375ml,33w,1,0,,0,Other
+Ketel One,Espresso Martini,,0.201,750ml,33w,1,0,,0,Other
+Jagermeister,Original,,0.35,750ml,33w,1,0,,0,Other
+Jagermeister,Manifest,,0.38,1000ml,33w,1,0,,0,Other
