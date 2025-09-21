@@ -76,38 +76,142 @@ def _normalize_locations(df: pd.DataFrame) -> pd.DataFrame:
         df[col] = df[col].fillna("").astype(str).str.strip()
     return df
 
-# ---------------------- Load flow ----------------------
+
+from pathlib import Path
+import pandas as pd
+import numpy as np
+import tempfile, glob
+
+# ---------- FIND + READ ----------
+def _find_data():
+    # Preferred exact paths
+    candidates = [
+        ("csv", "data/liquor_inventory.csv"),
+        ("xlsx","data/liquor_inventory.xlsx"),
+        # common alternates
+        ("xlsx","Liquor Inventory.xlsx"),
+        ("xlsx","liquor_inventory.xlsx"),
+    ]
+    for kind, pth in candidates:
+        if Path(pth).exists():
+            return kind, pth
+
+    # Any CSV/XLSX in data/ then anywhere in repo
+    for pattern in ["data/*.csv", "data/*.xlsx", "*.csv", "*.xlsx", "**/*.csv", "**/*.xlsx"]:
+        files = sorted(glob.glob(pattern, recursive=True))
+        if files:
+            csvs  = [f for f in files if f.lower().endswith(".csv")]
+            xlsxs = [f for f in files if f.lower().endswith((".xlsx",".xls"))]
+            if csvs:
+                return "csv", csvs[0]
+            if xlsxs:
+                return "xlsx", xlsxs[0]
+    return None, None
+
+def _excel_to_df(xlsx_path: str) -> pd.DataFrame:
+    xls = pd.ExcelFile(xlsx_path)
+    frames = []
+    for sh in xls.sheet_names:
+        raw = pd.read_excel(xlsx_path, sheet_name=sh).dropna(how="all")
+
+        def pick(names):
+            for n in names:
+                if n in raw.columns and not raw[n].dropna().empty:
+                    return raw[n]
+                for c in raw.columns:
+                    cstr = str(c)
+                    if cstr == n or cstr.startswith(n + "."):
+                        if not raw[c].dropna().empty:
+                            return raw[c]
+            return pd.Series([np.nan] * len(raw))
+
+        std = pd.DataFrame({
+            "Brand":       pick(["Liquor Brand","Brand","brand"]),
+            "Item":        pick(["Item","Name","Product"]),
+            "Type":        pick(["Type","Category"]),
+            "ABV":         pick(["% Alcohol","ABV"]),
+            "Size":        pick(["Size","Volume"]),
+            "Location 1":  pick(["Location 1","Location1","Location"]),
+            "Qty Full":    pick(["Quanity Full","Quantity Full"]),
+            "Qty Partial": pick(["Quanity Partial ","Quanity Partial","Quantity Partial","Quantity Partial "]),
+            "Location 2":  pick(["Location 2","Location2"]),
+            "Rating":      pick(["Rating"]),
+        })
+        std["Category"] = sh
+        frames.append(std)
+
+    df = pd.concat(frames, ignore_index=True)
+
+    for c in ["Qty Full","Qty Partial"]:
+        if c not in df.columns: df[c] = 0
+        df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0).astype(int)
+    if "Rating" not in df.columns: df["Rating"] = 0
+    df["Rating"] = pd.to_numeric(df["Rating"], errors="coerce").fillna(0).clip(0,5).astype(int)
+    for c in ["Brand","Item","Type","Size","Location 1","Location 2","Category"]:
+        if c not in df.columns: df[c] = ""
+        df[c] = df[c].astype(str).replace({"nan":""}).str.strip()
+    return df
+
+@st.cache_data(show_spinner=False)
+def _read_csv_safely(path: str, cache_key: str) -> pd.DataFrame:
+    pth = Path(path)
+    if not pth.exists():
+        return pd.DataFrame()
+    return pd.read_csv(pth)
+
+def _cache_key_for(path: str) -> str:
+    pth = Path(path)
+    if pth.exists():
+        s = pth.stat()
+        return f"{pth.resolve()}::{s.st_mtime_ns}::{s.st_size}"
+    return "missing"
+
+# ---------- Load flow ----------
+kind, path = _find_data()
 df = pd.DataFrame()
 source = None
 
-# Try CSV, then Excel, then upload
-df = _read_csv_safely(DATA_CSV, _cache_key_for(DATA_CSV)).copy()
-if not df.empty:
-    source = f"Repo CSV: {DATA_CSV}"
-elif Path(DATA_XLSX).exists():
-    df = _excel_to_df(DATA_XLSX)
-    source = f"Repo Excel: {DATA_XLSX}"
-    Path(DATA_CSV).parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(DATA_CSV, index=False)
+if kind == "csv":
+    df = _read_csv_safely(path, _cache_key_for(path)).copy()
+    source = f"Repo CSV: {path}"
+elif kind == "xlsx":
+    df = _excel_to_df(path)
+    source = f"Repo Excel: {path}"
+    # optional: persist to canonical CSV for faster future loads
+    Path("data").mkdir(exist_ok=True)
+    df.to_csv("data/liquor_inventory.csv", index=False)
 
 if df.empty:
-    st.warning("No bundled CSV/XLSX found. Upload a file to get started.")
+    st.warning("No bundled data found. Upload a .csv or .xlsx to get started.")
     up = st.file_uploader("Upload inventory (.csv or .xlsx)", type=["csv","xlsx"])
     if up is not None:
         if up.name.lower().endswith(".csv"):
-            df = pd.read_csv(up)
-            source = f"Uploaded CSV: {up.name}"
+            df = pd.read_csv(up); source = f"Uploaded CSV: {up.name}"
         else:
             tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
             tmp.write(up.getvalue()); tmp.flush()
-            df = _excel_to_df(tmp.name)
-            source = f"Uploaded Excel: {up.name}"
+            df = _excel_to_df(tmp.name); source = f"Uploaded Excel: {up.name}"
     if df.empty:
         st.stop()
 
-df = _normalize_locations(df)
+# Final normalization
+for col in ["Location 1","Location 2"]:
+    if col not in df.columns: df[col] = ""
+    df[col] = df[col].fillna("").astype(str).str.strip()
+
+st.caption(f"Data source: **{source or 'Unknown'}**")
+with st.expander("Debug: files the app can see", expanded=False):
+    st.write("Found kind/path:", kind, path)
+    import os
+    st.write("Repo root files:", os.listdir("."))
+    st.write("data/ files:", os.listdir("data") if Path("data").exists() else "no data/ dir")
+with st.expander("Debug: files the app can see", expanded=False):
+    st.write("Found kind/path:", kind, path)
+    st.write("Repo root files:", os.listdir("."))
+    st.write("data/ files:", os.listdir("data") if Path("data").exists() else "no data/ dir")
 
 # ---------------------- Header / Search ----------------------
+
 st.markdown(
     """
     <style>
@@ -205,56 +309,30 @@ loc_counts["Location"] = loc_counts.get("Location", pd.Series()).fillna("").asty
 loc_counts = loc_counts[loc_counts["Location"] != ""]
 by_loc = loc_counts.groupby("Location").agg(Full=("Qty Full","sum"), Partial=("Qty Partial","sum"))
 by_loc["Total"] = by_loc["Full"] + by_loc["Partial"]
-st.dataframe(by_loc.sort_values("Total", ascending=False), use_container_width=True)
+st.dataframe(by_loc.sort_values("Total", ascending=False), width='stretch')
 
 st.divider()
 
 
-# ---------------------- Chart Builder ----------------------
-st.markdown("### Chart Builder")
+# ---------------------- Categories Overview ----------------------
+st.markdown("### Categories Overview")
 
-# Candidate categorical columns
-_cats = [c for c in ["Category","Brand","Type","Size","Location 1","Location 2"] if c in filtered.columns]
-if not _cats:
-    st.info("No categorical columns available for charting.")
+if "Category" in df.columns and len(df):
+    # Summary table: Items (rows) and Bottles (Full+Partial) by Category
+    summary = df.assign(_bottles=df.get("Qty Full", 0) + df.get("Qty Partial", 0)) \
+                .groupby("Category").agg(Items=("Item","count"), Bottles=("_bottles","sum")) \
+                .reset_index().sort_values("Items", ascending=False)
+    c1, c2 = st.columns([1.2,1])
+    with c1:
+        st.dataframe(summary, width='stretch')
+    with c2:
+        fig_p = px.pie(summary, values="Items", names="Category", title="Items by Category", hole=0.35)
+        st.plotly_chart(fig_p, width='stretch')
 else:
-    colA, colB, colC, colD = st.columns([1.2,1.2,1,1])
-    with colA:
-        x_col = st.selectbox("X axis", options=_cats, index=0)
-    with colB:
-        group_col = st.selectbox("Group (optional)", options=["None"] + _cats, index=0)
-    with colC:
-        metric = st.selectbox("Metric", options=["Rows (items)","Total bottles (Full+Partial)"], index=1)
-    with colD:
-        top_n = st.slider("Top N", min_value=5, max_value=50, value=20, step=5)
-
-    chart_df = filtered.copy()
-    # Build a 'Location' helper if user selected one of the two location cols as X or Group
-    # (We keep them separate, but nothing special needed unless we wanted to merge)
-
-    # Aggregate
-    if metric.startswith("Rows"):
-        agg = {"_val":"size"}
-        chart_df["_val"] = 1
-    else:
-        # Total bottles = Full + Partial
-        chart_df["_val"] = chart_df.get("Qty Full", 0) + chart_df.get("Qty Partial", 0)
-        agg = {"_val":"sum"}
-
-    if group_col == "None":
-        gb = chart_df.groupby(x_col, dropna=False)["_val"].agg(agg["_val"]).reset_index(name="Value")
-        gb = gb.sort_values("Value", ascending=False).head(top_n)
-        fig = px.bar(gb, x=x_col, y="Value", title=f"{metric} by {x_col}")
-    else:
-        gb = chart_df.groupby([x_col, group_col], dropna=False)["_val"].agg(agg["_val"]).reset_index(name="Value")
-        # limit to Top N by main X
-        top_keys = gb.groupby(x_col)["Value"].sum().sort_values(ascending=False).head(top_n).index
-        gb = gb[gb[x_col].isin(top_keys)]
-        fig = px.bar(gb, x=x_col, y="Value", color=group_col, barmode="group", title=f"{metric} by {x_col} grouped by {group_col}")
-
-    st.plotly_chart(fig, use_container_width=True)
+    st.info("No category data available.")
 
 # ---------------------- Editable Ratings ----------------------
+
 st.markdown("### Edit Ratings")
 
 # Helper to render clickable stars and return updated value
