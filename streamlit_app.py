@@ -360,6 +360,7 @@ else:
     st.info("No category data available.")
 
 
+
 # ---------------------- Items Available ----------------------
 st.markdown("## Items Available")
 
@@ -372,25 +373,30 @@ for _col in ["Brand","Item","ABV","Size","Rating"]:
 items_df["Brand"] = items_df["Brand"].astype(str).str.strip()
 items_df["Item"] = items_df["Item"].astype(str).str.strip()
 items_df["ABV"] = items_df["ABV"].astype(str).str.strip()  # raw
-items_df["ABV_fmt"] = items_df["ABV"].apply(_format_abv)
 items_df["Size"] = items_df["Size"].astype(str).str.strip()
 items_df["Rating"] = pd.to_numeric(items_df["Rating"], errors="coerce").fillna(0).clip(0,5).astype(int)
 
+# Sorting controls
+sort_col_label = st.selectbox("Sort by", options=["Liquor Brand","Item","% Alcohol","Size","Rating"], index=0)
+sort_asc = st.toggle("Ascending", value=True)
 
-# Sortable view (click column headers to sort)
-_table_view = items_df.copy()
-_table_view["Liquor Brand"] = _table_view["Brand"]
-_table_view["Item"] = _table_view["Item"]
-_table_view["% Alcohol"] = items_df["ABV"].apply(_format_abv)
-_table_view["Size"] = _table_view["Size"]
-_table_view["Rating"] = _table_view["Rating"].astype(int)
-_table_view["Stars"] = _table_view["Rating"].apply(lambda n: "⭐"*int(n) + "☆"*(5-int(n)))
-st.dataframe(
-    _table_view[["Liquor Brand","Item","% Alcohol","Size","Rating","Stars"]].reset_index(drop=True),
-    width='stretch',
-    hide_index=True
-)
-st.caption("Tip: Click a column header to sort. Use the star controls below to change ratings, then Save.")
+# Numeric ABV for sorting & formatted ABV display
+def _parse_abv_num(v):
+    s = _format_abv(v)
+    import re
+    m = re.search(r"\d+(?:\.\d+)?", s)
+    return float(m.group(0)) if m else -1.0
+items_df["_abv_num"] = items_df["ABV"].apply(_parse_abv_num)
+
+sort_map = {
+    "Liquor Brand": ("Brand", False),
+    "Item": ("Item", False),
+    "% Alcohol": ("_abv_num", True),
+    "Size": ("Size", False),
+    "Rating": ("Rating", True),
+}
+col_name, _ = sort_map.get(sort_col_label, ("Brand", False))
+items_df = items_df.sort_values(col_name, ascending=sort_asc, kind="mergesort")
 
 # Header row
 hc1, hc2, hc3, hc4, hc5 = st.columns([2,3,1.2,1.2,2.2])
@@ -400,7 +406,7 @@ with hc3: st.markdown("**% Alcohol**")
 with hc4: st.markdown("**Size**")
 with hc5: st.markdown("**Rating**")
 
-# Interactive star control per row (⭐ for selected, ☆ for empty)
+# Interactive star control per row (⭐ selected, ☆ empty)
 pending_updates = {}
 for ridx, row in items_df.reset_index().iterrows():
     src_idx = int(row["index"])
@@ -433,7 +439,6 @@ if st.button("💾 Save ratings (session & file)"):
         st.rerun()
     else:
         st.warning("No 'Rating' column in data; cannot save.")
-
 # ---------------------- Add New Bottle ----------------------
 st.markdown("### Add a New Bottle")
 with st.form("add_bottle"):
@@ -478,3 +483,4 @@ with st.form("add_bottle"):
 st.caption("Use **⬇️ Export** as your durable backup.")
 csv_bytes = df.to_csv(index=False).encode("utf-8")
 st.download_button("⬇️ Export current inventory CSV", csv_bytes, file_name="liquor_inventory.csv", mime="text/csv")
+
