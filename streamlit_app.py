@@ -9,6 +9,34 @@ import io
 
 st.set_page_config(page_title="Liquor Inventory", layout="wide")
 
+def _format_abv(val):
+    """Return a clean percent string like '40%' from varied inputs.
+    Rules: numbers <= 1 are treated as fractions (e.g., 0.4 -> 40%),
+    numbers > 1 are treated as percents (e.g., 40 -> 40%). Strings with '%' keep numeric part.
+    """
+    import math, re
+    if val is None or (isinstance(val, float) and math.isnan(val)):
+        return ""
+    s = str(val).strip()
+    if s == "" or s.lower() == "nan":
+        return ""
+    # Extract number possibly with % sign
+    m = re.search(r"-?\d+(?:[\.,]\d+)?", s.replace(',', '.'))
+    if not m:
+        return s  # fallback, show raw
+    num = float(m.group(0))
+    # If original string contains '%', assume already percent
+    if '%' in s:
+        pct = num
+    else:
+        pct = num*100 if 0 <= num <= 1 else num
+    # Clean formatting: drop .0
+    if abs(pct - round(pct)) < 1e-9:
+        return f"{int(round(pct))}%"
+    else:
+        return f"{pct:.1f}%"
+
+
 DATA_CSV  = "data/liquor_inventory.csv"
 DATA_XLSX = "data/liquor_inventory.xlsx"
 
@@ -343,7 +371,8 @@ for _col in ["Brand","Item","ABV","Size","Rating"]:
         items_df[_col] = "" if _col != "Rating" else 0
 items_df["Brand"] = items_df["Brand"].astype(str).str.strip()
 items_df["Item"] = items_df["Item"].astype(str).str.strip()
-items_df["ABV"] = items_df["ABV"].astype(str).str.strip()
+items_df["ABV"] = items_df["ABV"].astype(str).str.strip()  # raw
+items_df["ABV_fmt"] = items_df["ABV"].apply(_format_abv)
 items_df["Size"] = items_df["Size"].astype(str).str.strip()
 items_df["Rating"] = pd.to_numeric(items_df["Rating"], errors="coerce").fillna(0).clip(0,5).astype(int)
 
@@ -362,7 +391,7 @@ for ridx, row in items_df.reset_index().iterrows():
     c1, c2, c3, c4, c5 = st.columns([2,3,1.2,1.2,2.2])
     with c1: st.write(row["Brand"])
     with c2: st.write(row["Item"])
-    with c3: st.write(row["ABV"])
+    with c3: st.write(_format_abv(row["ABV"]))
     with c4: st.write(row["Size"])
     with c5:
         current = int(row["Rating"]) if pd.notna(row["Rating"]) else 0
